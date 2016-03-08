@@ -12,7 +12,7 @@ RUN apt-get install -y \
   vim bc libncurses5-dev
 ADD entrypoint /
 # get git trees
-CMD entrypoint 
+CMD /entrypoint 
 
 
 

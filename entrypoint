@@ -1,3 +1,5 @@
+#!/bin/bash -x
+
 pushd build
 [ ! -d u-boot ]       && git clone git://git.denx.de/u-boot.git
 [ ! -d sunxi-boards ] && git clone git://github.com/linux-sunxi/sunxi-boards.git
@@ -7,17 +9,27 @@ export ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
 # build u-boot for  Orange PI Plus
 pushd u-boot
 make orangepi_plus_defconfig
-make -j4
+make -j`nproc`
 popd
 
+# remove target
+rm -rf /build/output
 # build kernel
 pushd linux-sunxi
 make sunxi_defconfig
-make -j4 zImage dtbs
-INSTALL_MOD_PATH=output make -j4 modules modules_install
-cp arch/arm/
+make -j`nproc` zImage dtbs
+INSTALL_MOD_PATH=/build/output make -j`nproc` modules modules_install
+mkdir -p /build/output/boot
+cp arch/arm/boot/zImage /build/output/boot
+cp arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts /build/output/boot
 popd
 # Image
-[ ! -f ArchLinuxARM-armv8-latest.tar.gz ] && wget http://archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz
-
-# create partitions 
+pushd build
+[ ! -f /build/ArchLinuxARM-armv7-latest.tar.gz ] && wget http://archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz
+pushd output
+mkdir usr
+mv lib usr
+tar zxf /build/ArchLinuxARM-armv7-latest.tar.gz
+rm -rf usr/lib/modules/4.4.3-1-ARCH usr/lib/modules/extramodules-4.4--armv7
+popd ; popd
+exit 0
