@@ -14,17 +14,18 @@ popd
 
 # remove target
 rm -rf /build/output
+mkdir -p /build/output/boot
 # build kernel
 pushd linux-sunxi
 make sunxi_defconfig
 make -j`nproc` zImage dtbs
-INSTALL_MOD_PATH=/build/output make -j`nproc` modules modules_install
-mkdir -p /build/output/boot
+make -j`nproc` modules
+INSTALL_MOD_PATH=/build/output make modules_install
 cp arch/arm/boot/zImage /build/output/boot
 cp arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts /build/output/boot
 popd
 # Image
-pushd build
+cd /build
 [ ! -f /build/ArchLinuxARM-armv7-latest.tar.gz ] && wget http://archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz
 pushd output
 mkdir usr
