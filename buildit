@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# all still without errochecking, but barf if nonzero
+set -e
+
+# Layout is simple :
+# in $WORKDIR, git clone builder into 'docker'
+# in $WORKDIR , make directory 'build' (or a btrfs/zfs subvol)
+WORKDIR=$(pwd)
+[ ! -d 'docker' ] && git clone https://github.com/delandtj/armbuilder.git docker
+cd ${WORKDIR}/docker
+docker build -t armbuilder .
+docker run --rm -it --name armbuild -v ${WORKDIR}/build:/build
+
+
