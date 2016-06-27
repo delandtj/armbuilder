@@ -10,6 +10,6 @@ WORKDIR=$(pwd)
 [ ! -d 'docker' ] && git clone https://github.com/delandtj/armbuilder.git docker
 cd ${WORKDIR}/docker
 docker build -t armbuilder .
-docker run --rm -it --name armbuild -v ${WORKDIR}/build:/build
+docker run --rm -it --name armbuild -v ${WORKDIR}/build:/build armbuilder
 
 
